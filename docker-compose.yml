@@ -1,0 +1,26 @@
+version: "3"
+services:
+  owasp:
+#    image: owasp/benchmark
+    build: .
+    container_name: owasp-benchmark
+    restart: always
+    ports:
+      - "8443:8443"
+    logging:
+      options:
+        max-file: "5"
+        max-size: "10m"
+    healthcheck:
+      test: [ "CMD", "curl", "-fk", "https://localhost:8443/benchmark" ]
+      timeout: 10s
+      interval: 30s
+      retries: 3
+
+  autoheal:
+    restart: always
+    image: willfarrell/autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
