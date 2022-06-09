@@ -1,0 +1,22 @@
+name: Docker Image CI
+
+on:
+  schedule:
+    - cron: 0 0 * * 3
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: neuralegion/devops
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Docker image
+        run: docker build . --file Dockerfile 
+            --tag neuralegion/owasp-benchmark-container-config
+      - name: Login into Docker
+        run: docker login --username=anatol1988 --password=${{ secrets.DOCKER_TOKEN }}
+      - name: Push Docker image to Docker Hub
+        run: docker push neuralegion/owasp-benchmark-container-config
